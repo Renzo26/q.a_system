@@ -1,0 +1,18 @@
+# Segredos e ambiente
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Banco local e storage de evidências
+*.db
+qa_argus.db
+storage/

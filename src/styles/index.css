@@ -1,0 +1,177 @@
+@import "tailwindcss";
+
+/* ============================================================
+   QA Argus — Design System
+   Híbrido: chrome escuro + canvas claro · acento lime-yellow
+   ============================================================ */
+
+@theme {
+  /* Typography */
+  --font-display: "Bricolage Grotesque", "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Canvas claro */
+  --color-canvas: #f4f4ee;
+  --color-surface: #ffffff;
+  --color-surface-2: #fafaf6;
+  --color-ink: #191a1f;
+  --color-ink-soft: #56585f;
+  --color-ink-mute: #8b8d94;
+  --color-line: #e8e8df;
+  --color-line-soft: #f1f1ea;
+
+  /* Chrome escuro */
+  --color-shell: #131419;
+  --color-shell-2: #1b1c23;
+  --color-shell-3: #23242c;
+  --color-shell-line: #2b2c35;
+  --color-shell-ink: #eaeaee;
+  --color-shell-soft: #9a9ca6;
+  --color-shell-mute: #6b6d78;
+
+  /* Marca (lime-yellow) */
+  --color-brand: #e4f24a;
+  --color-brand-bright: #edfb63;
+  --color-brand-deep: #c8d92e;
+  --color-brand-ink: #16170f;
+  --color-brand-soft: #f4f9c6;
+
+  /* Escala de risco / status — distinta do amarelo da marca */
+  --color-risk-low: #12b886;
+  --color-risk-low-soft: #dcf5ec;
+  --color-risk-med: #f97316;
+  --color-risk-med-soft: #fdead9;
+  --color-risk-high: #f43f5e;
+  --color-risk-high-soft: #fce0e5;
+
+  --color-info: #3b82f6;
+  --color-info-soft: #e2edff;
+
+  /* Raios */
+  --radius-card: 1.5rem;
+  --radius-tile: 1.125rem;
+
+  /* Sombras */
+  --shadow-card: 0 1px 2px rgba(20, 22, 28, 0.04), 0 8px 24px -12px rgba(20, 22, 28, 0.12);
+  --shadow-pop: 0 12px 40px -12px rgba(20, 22, 28, 0.28);
+
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* ============================================================
+   Tema escuro — sobrescreve os tokens semânticos.
+   Todos os utilitários usam var(--color-*), então basta trocar
+   os valores aqui: os componentes flipam automaticamente.
+   ============================================================ */
+:root {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-canvas: #0e0f13;
+  --color-surface: #17181f;
+  --color-surface-2: #1e1f27;
+  --color-ink: #f3f3f5;
+  --color-ink-soft: #adaeb6;
+  --color-ink-mute: #74767e;
+  --color-line: #2a2b34;
+  --color-line-soft: #22232b;
+
+  /* Tints translúcidos legíveis sobre fundo escuro */
+  --color-risk-low-soft: rgba(18, 184, 134, 0.16);
+  --color-risk-med-soft: rgba(249, 115, 22, 0.16);
+  --color-risk-high-soft: rgba(244, 63, 94, 0.16);
+  --color-info-soft: rgba(59, 130, 246, 0.16);
+  --color-brand-soft: rgba(228, 242, 74, 0.14);
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px -12px rgba(0, 0, 0, 0.6);
+  --shadow-pop: 0 12px 40px -12px rgba(0, 0, 0, 0.7);
+}
+
+/* Ajustes finos no escuro */
+:root[data-theme="dark"] .grain::after {
+  opacity: 0.3;
+}
+:root[data-theme="dark"] .scroll-slim {
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-line);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-shell);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "ss01";
+  }
+
+  ::selection {
+    background: var(--color-brand);
+    color: var(--color-brand-ink);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
+
+  .nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+}
+
+@layer utilities {
+  /* Grão sutil */
+  .grain {
+    position: relative;
+  }
+  .grain::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.55;
+    /* sem mix-blend-mode: evita artefatos de composição em GPU */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  .scroll-slim {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-rise { animation: rise 0.6s var(--ease-out-quart) both; }
+
+  @keyframes floaty {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .animate-floaty { animation: floaty 6s ease-in-out infinite; }
+
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(228, 242, 74, 0.45); }
+    100% { box-shadow: 0 0 0 10px rgba(228, 242, 74, 0); }
+  }
+  .animate-pulse-ring { animation: pulse-ring 2.4s var(--ease-out-quart) infinite; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-rise, .animate-floaty, .animate-pulse-ring { animation: none; }
+  }
+}

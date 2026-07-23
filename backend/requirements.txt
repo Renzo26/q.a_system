@@ -1,0 +1,20 @@
+# QA Argus — Backend (FastAPI + SQLAlchemy 2 async)
+# Python 3.12+ recomendado. Testado em 3.14 local.
+
+fastapi>=0.115
+uvicorn>=0.30
+sqlalchemy[asyncio]>=2.0.30
+aiosqlite>=0.20          # driver async SQLite (dev local)
+asyncpg>=0.29            # driver async PostgreSQL (Supabase / produção)
+alembic>=1.13
+pydantic>=2.7
+pydantic-settings>=2.3
+python-jose[cryptography]>=3.3
+passlib>=1.7.4
+python-multipart>=0.0.9  # uploads (evidências)
+email-validator>=2.1
+
+# Produção (Supabase, per CLAUDE.md) — hashing com bcrypt:
+#   passlib[bcrypt]==1.7.4
+#   bcrypt==3.2.2
+# No dev em Python 3.14 usamos pbkdf2_sha256 (puro Python, sem compilador).

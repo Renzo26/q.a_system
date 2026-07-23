@@ -1,0 +1,54 @@
+# ============================================================
+#  QA Argus — Deploy (VPS + EasyPanel + Docker Compose)
+#  Variáveis definidas no painel do EasyPanel (não em arquivo).
+# ============================================================
+services:
+  backend:
+    build:
+      context: ./backend
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+      CORS_ORIGINS: ${CORS_ORIGINS}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
+      STORAGE_DIR: /app/storage
+      AUTO_CREATE_TABLES: ${AUTO_CREATE_TABLES:-true}
+      SEED_ON_START: ${SEED_ON_START:-false}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
+    volumes:
+      - backend_storage:/app/storage
+    expose:
+      - "8080"
+    restart: unless-stopped
+    networks:
+      easypanel:
+        aliases:
+          - qa-backend
+
+  frontend:
+    build:
+      context: .
+      args:
+        # URL pública do backend — embutida no bundle em tempo de build.
+        VITE_API_URL: ${VITE_API_URL}
+    expose:
+      - "80"
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      easypanel:
+        aliases:
+          - qa-frontend
+
+volumes:
+  backend_storage:
+
+networks:
+  easypanel:
+    external: true

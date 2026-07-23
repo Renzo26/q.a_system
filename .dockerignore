@@ -1,0 +1,14 @@
+# Contexto de build do frontend (raiz) — exclui o que não é do build Vite.
+node_modules
+dist
+.vite
+.git
+.gitignore
+backend
+scripts
+storage
+*.md
+.env
+.env.*
+conexio_db.md
+docker-compose.yml
