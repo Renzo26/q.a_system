@@ -56,7 +56,7 @@ export function BrandPanel() {
               <span className="text-brand">decisão de qualidade</span>.
             </h2>
             <p className="mt-4 text-[14.5px] leading-relaxed text-shell-soft">
-              Conecte um repositório do GitHub e deixe o Argus analisar riscos, sugerir testes e recomendar quando
+              Conecte um repositório do GitHub e deixe o Q.A braesp analisar riscos, sugerir testes e recomendar quando
               liberar — ou bloquear — uma versão.
             </p>
           </div>
@@ -67,7 +67,7 @@ export function BrandPanel() {
               <div className="flex items-center justify-between">
                 <div className="inline-flex items-center gap-2 rounded-full bg-brand/12 px-2.5 py-1 text-[11px] font-semibold text-brand">
                   <Sparkles className="size-3" />
-                  Recomendação do Argus
+                  Recomendação do Q.A braesp
                 </div>
                 <span className="font-mono text-[11px] text-shell-mute">PR #482</span>
               </div>

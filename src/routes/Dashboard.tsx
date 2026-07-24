@@ -101,7 +101,7 @@ function EmptyState() {
           Nenhum repositório conectado
         </h1>
         <p className="mt-2 text-[14.5px] text-ink-soft">
-          Conecte um repositório do GitHub para o Argus começar a analisar riscos, sugerir testes e avaliar releases.
+          Conecte um repositório do GitHub para o Q.A braesp começar a analisar riscos, sugerir testes e avaliar releases.
         </p>
         <div className="mt-6 flex justify-center">
           <Button variant="brand" size="lg" onClick={() => navigate({ to: "/conectar" })}>
@@ -129,7 +129,7 @@ export function Dashboard() {
         <div>
           <h1 className="font-display text-[26px] font-bold tracking-tight text-ink">Dashboard de qualidade</h1>
           <p className="mt-1 text-[14px] text-ink-soft">
-            Visão geral do repositório conectado e da análise do Argus.
+            Visão geral do repositório conectado e da análise do Q.A braesp.
           </p>
         </div>
         <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-surface-2 px-3 py-1 font-mono text-[11px] text-ink-mute">
@@ -292,7 +292,7 @@ export function Dashboard() {
               <Lightbulb className="size-5" />
             </span>
             <div>
-              <div className="font-display text-[15px] font-bold text-shell-ink">Testes sugeridos pelo Argus</div>
+              <div className="font-display text-[15px] font-bold text-shell-ink">Testes sugeridos pelo Q.A braesp</div>
               <p className="text-[12px] text-shell-soft">Cenários prioritários com base no risco e na cobertura atual.</p>
             </div>
           </div>

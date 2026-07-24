@@ -29,7 +29,7 @@ export function Logo({ size = "md", variant = "dark", showText = true, className
       {showText && (
         <div className="leading-none">
           <div className={cn("font-display font-bold tracking-tight", textSize[size], wordColor)}>
-            QA<span className="text-brand"> Argus</span>
+            Q.A<span className="text-brand"> braesp</span>
           </div>
           <div className={cn("mt-1 font-mono text-[10px] uppercase tracking-[0.18em]", subColor)}>
             quality intelligence
