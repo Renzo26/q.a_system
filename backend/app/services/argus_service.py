@@ -75,6 +75,50 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "github_readme",
+            "description": (
+                "Lê o README do repositório conectado. É a MELHOR fonte para entender o que o "
+                "projeto FAZ, seu propósito, funcionalidades e como executá-lo. Use quando "
+                "perguntarem 'o que esse repositório faz' ou algo sobre o propósito do projeto."
+            ),
+            "parameters": {"type": "object", "properties": {}, "required": []},
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "github_arquivos",
+            "description": (
+                "Lista arquivos e pastas do repositório conectado em um caminho (vazio = raiz). "
+                "Útil para entender a estrutura do projeto e descobrir arquivos importantes."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "caminho": {"type": "string", "description": "Pasta a listar (padrão: raiz)."}
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "github_arquivo",
+            "description": (
+                "Lê o conteúdo de um arquivo específico do repositório conectado pelo caminho "
+                "(ex: package.json, src/main.py, README.md). Use para inspecionar código ou configuração."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {"caminho": {"type": "string", "description": "Caminho do arquivo."}},
+                "required": ["caminho"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "github_commits",
             "description": "Lista os commits recentes do repositório conectado.",
             "parameters": {
@@ -165,6 +209,15 @@ async def _executar_tool(db: AsyncSession, nome: str, args: dict, repo: dict | N
         try:
             if nome == "github_info":
                 return await github_service.info_repo(owner, nome_repo)
+            if nome == "github_readme":
+                return await github_service.obter_readme(owner, nome_repo)
+            if nome == "github_arquivos":
+                return await github_service.listar_arquivos(owner, nome_repo, args.get("caminho", ""))
+            if nome == "github_arquivo":
+                caminho = args.get("caminho")
+                if not caminho:
+                    return {"erro": "Informe o caminho do arquivo."}
+                return await github_service.ler_arquivo(owner, nome_repo, caminho)
             if nome == "github_commits":
                 return await github_service.listar_commits(owner, nome_repo, limite=int(args.get("limite", 10)))
             if nome == "github_commit":
@@ -181,7 +234,11 @@ def _system_prompt(repo: dict | None) -> str:
     if repo:
         return (
             f"{SYSTEM_PROMPT_BASE}\n\nRepositório conectado: {repo['owner']}/{repo['repo']}. "
-            "Use as ferramentas github_* para analisar commits, pull requests e mudanças de código."
+            "Use as ferramentas github_* para analisar commits, pull requests e mudanças de código. "
+            "Para explicar O QUE o projeto faz ou seu propósito, leia SEMPRE o README (github_readme); "
+            "se o README não bastar, explore a estrutura (github_arquivos) e leia arquivos-chave "
+            "como package.json, pyproject.toml ou o código principal (github_arquivo). "
+            "Não diga que 'não é possível saber o que o projeto faz' sem antes ler o README e os arquivos."
         )
     return (
         f"{SYSTEM_PROMPT_BASE}\n\nNenhum repositório está conectado no momento. "

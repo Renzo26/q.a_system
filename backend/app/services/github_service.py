@@ -19,9 +19,17 @@ def _headers() -> dict:
     return h
 
 
-async def _get(client: httpx.AsyncClient, path: str, params: dict | None = None) -> httpx.Response:
+async def _get(
+    client: httpx.AsyncClient,
+    path: str,
+    params: dict | None = None,
+    accept: str | None = None,
+) -> httpx.Response:
+    headers = _headers()
+    if accept:
+        headers["Accept"] = accept
     try:
-        return await client.get(f"{API}{path}", params=params, headers=_headers(), timeout=15)
+        return await client.get(f"{API}{path}", params=params, headers=headers, timeout=15)
     except httpx.HTTPError as e:
         raise GitHubError(f"Falha de rede ao acessar o GitHub: {e}") from e
 
@@ -105,6 +113,57 @@ async def detalhar_commit(owner: str, repo: str, sha: str) -> dict:
             "linhas_removidas": stats.get("deletions", 0),
             "arquivos_alterados": len(d.get("files") or []),
             "arquivos": arquivos,
+        }
+
+
+async def obter_readme(owner: str, repo: str, max_chars: int = 6000) -> dict:
+    """Lê o README do repositório (texto cru). Melhor fonte para entender o propósito do projeto."""
+    async with httpx.AsyncClient() as client:
+        r = await _get(client, f"/repos/{owner}/{repo}/readme", accept="application/vnd.github.raw")
+        if r.status_code == 404:
+            return {"tem_readme": False, "conteudo": "", "aviso": "Este repositório não tem README."}
+        _check(r)
+        texto = r.text
+        return {
+            "tem_readme": True,
+            "conteudo": texto[:max_chars],
+            "truncado": len(texto) > max_chars,
+        }
+
+
+async def listar_arquivos(owner: str, repo: str, caminho: str = "") -> object:
+    """Lista arquivos/pastas de um caminho do repositório (vazio = raiz)."""
+    caminho = (caminho or "").strip("/")
+    async with httpx.AsyncClient() as client:
+        r = await _get(client, f"/repos/{owner}/{repo}/contents/{caminho}")
+        _check(r)
+        data = r.json()
+        if isinstance(data, dict):  # apontou para um arquivo, não uma pasta
+            return [{"nome": data.get("name"), "tipo": data.get("type"), "tamanho": data.get("size")}]
+        return [
+            {
+                "nome": item.get("name"),
+                "tipo": item.get("type"),  # "file" ou "dir"
+                "caminho": item.get("path"),
+                "tamanho": item.get("size"),
+            }
+            for item in data
+        ][:100]
+
+
+async def ler_arquivo(owner: str, repo: str, caminho: str, max_chars: int = 6000) -> dict:
+    """Lê o conteúdo cru de um arquivo do repositório."""
+    caminho = (caminho or "").strip("/")
+    async with httpx.AsyncClient() as client:
+        r = await _get(client, f"/repos/{owner}/{repo}/contents/{caminho}", accept="application/vnd.github.raw")
+        if r.status_code == 404:
+            raise GitHubError(f"Arquivo '{caminho}' não encontrado no repositório.")
+        _check(r)
+        texto = r.text
+        return {
+            "caminho": caminho,
+            "conteudo": texto[:max_chars],
+            "truncado": len(texto) > max_chars,
         }
 
 
