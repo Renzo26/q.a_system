@@ -3,7 +3,7 @@ import json
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.services import defeito_service, github_service, postman_service
+from app.services import defeito_service, github_service, postman_service, repo_service
 
 SYSTEM_PROMPT_BASE = """Você é o Argus, o agente de inteligência de Quality Assurance da plataforma QA Argus.
 Ajuda o time de qualidade a entender os defeitos, as coleções de teste (Postman), o repositório e a saúde do projeto.
@@ -75,11 +75,13 @@ TOOLS = [
     {
         "type": "function",
         "function": {
-            "name": "github_readme",
+            "name": "analisar_codigo",
             "description": (
-                "Lê o README do repositório conectado. É a MELHOR fonte para entender o que o "
-                "projeto FAZ, seu propósito, funcionalidades e como executá-lo. Use quando "
-                "perguntarem 'o que esse repositório faz' ou algo sobre o propósito do projeto."
+                "Baixa o repositório conectado INTEIRO para dentro do sistema e retorna a "
+                "estrutura completa de arquivos + o conteúdo dos arquivos-chave (README, "
+                "package.json, configs, Dockerfile). É a ferramenta principal para entender a "
+                "fundo O QUE o projeto faz, sua arquitetura e tecnologias. Use SEMPRE que "
+                "perguntarem sobre o propósito, o funcionamento ou a estrutura do projeto."
             ),
             "parameters": {"type": "object", "properties": {}, "required": []},
         },
@@ -87,32 +89,32 @@ TOOLS = [
     {
         "type": "function",
         "function": {
-            "name": "github_arquivos",
+            "name": "ler_codigo",
             "description": (
-                "Lista arquivos e pastas do repositório conectado em um caminho (vazio = raiz). "
-                "Útil para entender a estrutura do projeto e descobrir arquivos importantes."
+                "Lê o conteúdo de um arquivo do repositório baixado, pelo caminho relativo "
+                "(ex: src/App.tsx, backend/app/main.py). Use para aprofundar em arquivos "
+                "encontrados na estrutura. Baixa o repositório automaticamente se necessário."
             ),
             "parameters": {
                 "type": "object",
-                "properties": {
-                    "caminho": {"type": "string", "description": "Pasta a listar (padrão: raiz)."}
-                },
-                "required": [],
+                "properties": {"caminho": {"type": "string", "description": "Caminho relativo do arquivo."}},
+                "required": ["caminho"],
             },
         },
     },
     {
         "type": "function",
         "function": {
-            "name": "github_arquivo",
+            "name": "buscar_codigo",
             "description": (
-                "Lê o conteúdo de um arquivo específico do repositório conectado pelo caminho "
-                "(ex: package.json, src/main.py, README.md). Use para inspecionar código ou configuração."
+                "Busca um termo em TODO o código do repositório baixado (como um grep): nome de "
+                "função, rota, componente, endpoint, texto, etc. Retorna arquivos, linhas e "
+                "trechos. Ótimo para rastrear onde algo é implementado ou usado."
             ),
             "parameters": {
                 "type": "object",
-                "properties": {"caminho": {"type": "string", "description": "Caminho do arquivo."}},
-                "required": ["caminho"],
+                "properties": {"termo": {"type": "string", "description": "Texto a procurar no código."}},
+                "required": ["termo"],
             },
         },
     },
@@ -202,22 +204,25 @@ async def _executar_tool(db: AsyncSession, nome: str, args: dict, repo: dict | N
             ],
         }
 
-    if nome.startswith("github_"):
+    if nome.startswith("github_") or nome in {"analisar_codigo", "ler_codigo", "buscar_codigo"}:
         if not repo:
             return {"erro": "Nenhum repositório conectado. Peça ao usuário para conectar um repositório na tela 'Conectar repositório'."}
         owner, nome_repo = repo["owner"], repo["repo"]
         try:
             if nome == "github_info":
                 return await github_service.info_repo(owner, nome_repo)
-            if nome == "github_readme":
-                return await github_service.obter_readme(owner, nome_repo)
-            if nome == "github_arquivos":
-                return await github_service.listar_arquivos(owner, nome_repo, args.get("caminho", ""))
-            if nome == "github_arquivo":
+            if nome == "analisar_codigo":
+                return await repo_service.analisar(owner, nome_repo)
+            if nome == "ler_codigo":
                 caminho = args.get("caminho")
                 if not caminho:
                     return {"erro": "Informe o caminho do arquivo."}
-                return await github_service.ler_arquivo(owner, nome_repo, caminho)
+                return await repo_service.ler_arquivo(owner, nome_repo, caminho)
+            if nome == "buscar_codigo":
+                termo = args.get("termo")
+                if not termo:
+                    return {"erro": "Informe o termo de busca."}
+                return await repo_service.buscar(owner, nome_repo, termo)
             if nome == "github_commits":
                 return await github_service.listar_commits(owner, nome_repo, limite=int(args.get("limite", 10)))
             if nome == "github_commit":
@@ -234,11 +239,14 @@ def _system_prompt(repo: dict | None) -> str:
     if repo:
         return (
             f"{SYSTEM_PROMPT_BASE}\n\nRepositório conectado: {repo['owner']}/{repo['repo']}. "
-            "Use as ferramentas github_* para analisar commits, pull requests e mudanças de código. "
-            "Para explicar O QUE o projeto faz ou seu propósito, leia SEMPRE o README (github_readme); "
-            "se o README não bastar, explore a estrutura (github_arquivos) e leia arquivos-chave "
-            "como package.json, pyproject.toml ou o código principal (github_arquivo). "
-            "Não diga que 'não é possível saber o que o projeto faz' sem antes ler o README e os arquivos."
+            "Você pode BAIXAR o repositório inteiro para o sistema e analisá-lo a fundo. "
+            "Para explicar o que o projeto faz, sua arquitetura ou estrutura, chame SEMPRE "
+            "analisar_codigo primeiro — ele traz a árvore de arquivos e os arquivos-chave. "
+            "Depois, se precisar de detalhes, use ler_codigo (abrir um arquivo específico) e "
+            "buscar_codigo (procurar um termo em todo o código). Use github_commits, "
+            "github_commit e github_pull_requests para histórico e mudanças. "
+            "NUNCA diga que 'não é possível saber o que o projeto faz' sem antes chamar "
+            "analisar_codigo e inspecionar os arquivos-chave e a pasta de código-fonte."
         )
     return (
         f"{SYSTEM_PROMPT_BASE}\n\nNenhum repositório está conectado no momento. "
