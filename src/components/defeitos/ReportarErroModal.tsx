@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -89,7 +90,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   async function onSubmit(values: FormValues) {
     setErroApi(null);
@@ -120,7 +121,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:p-6"
       onMouseDown={(e) => {
@@ -284,6 +285,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
           </div>
         </footer>
       </form>
-    </div>
+    </div>,
+    document.body,
   );
 }

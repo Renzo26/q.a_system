@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Workflow,
@@ -93,9 +94,9 @@ export function ColecaoDetalheModal({ colecaoId, onClose }: Props) {
     };
   }, [colecaoId, onClose]);
 
-  if (!colecaoId) return null;
+  if (!colecaoId || typeof document === "undefined") return null;
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:p-6"
       onMouseDown={(e) => {
@@ -173,6 +174,7 @@ export function ColecaoDetalheModal({ colecaoId, onClose }: Props) {
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

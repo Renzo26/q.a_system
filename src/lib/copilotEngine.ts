@@ -232,8 +232,24 @@ export const promptStarters: { icon: string; title: string; prompt: string }[] =
 ];
 
 export const quickActions: { label: string; prompt: string }[] = [
-  { label: "Defeitos críticos abertos", prompt: "Quais defeitos críticos ou de alta severidade estão abertos?" },
-  { label: "Resumo dos defeitos", prompt: "Faça um resumo dos defeitos por severidade e status." },
-  { label: "Explicar uma coleção", prompt: "Liste as coleções importadas e explique o fluxo de uma delas." },
-  { label: "O que priorizar", prompt: "Com base nos defeitos abertos, o que devemos priorizar?" },
+  {
+    label: "Executar plano de teste",
+    prompt:
+      "Monte um plano de teste para o projeto conectado com base nas coleções do Postman e nos defeitos abertos, e descreva os passos para executá-lo.",
+  },
+  {
+    label: "Teste unitário",
+    prompt:
+      "Analise o código do repositório e sugira testes unitários para as funções e módulos mais críticos, indicando os cenários a cobrir.",
+  },
+  {
+    label: "Teste integrado",
+    prompt:
+      "Sugira testes de integração para os principais fluxos do sistema, considerando as coleções do Postman e a comunicação entre módulos.",
+  },
+  {
+    label: "Teste de regressão",
+    prompt:
+      "Monte um conjunto de testes de regressão priorizando as áreas afetadas por defeitos já registrados e pelos fluxos das coleções.",
+  },
 ];

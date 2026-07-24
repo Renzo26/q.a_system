@@ -1,4 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import {
   X,
   Bug,
@@ -136,7 +137,7 @@ export function DefeitoDetalheModal({ defeito, onClose }: Props) {
     };
   }, [defeito, onClose]);
 
-  if (!defeito) return null;
+  if (!defeito || typeof document === "undefined") return null;
 
   const sev = severidadeMeta[defeito.severidade];
   const st = statusMeta[defeito.status];
@@ -149,7 +150,7 @@ export function DefeitoDetalheModal({ defeito, onClose }: Props) {
     onClose();
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:p-6"
       onMouseDown={(e) => {
@@ -305,6 +306,7 @@ export function DefeitoDetalheModal({ defeito, onClose }: Props) {
           </div>
         </footer>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
