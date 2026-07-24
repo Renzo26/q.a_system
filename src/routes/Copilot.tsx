@@ -1,50 +1,18 @@
 import { useEffect, useRef } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { Sparkles, Plus, Github, ArrowRight } from "lucide-react";
+import { Sparkles, Plus } from "lucide-react";
 import { useCopilotChat } from "@/hooks/useCopilotChat";
 import { ChatMessage } from "@/components/copilot/ChatMessage";
 import { Composer } from "@/components/copilot/Composer";
 import { PromptStarters } from "@/components/copilot/PromptStarters";
 import { ContextPanel } from "@/components/copilot/ContextPanel";
-import { Button } from "@/components/ui/Button";
-import { useAuth } from "@/lib/auth";
-
-function NoRepo() {
-  const navigate = useNavigate();
-  return (
-    <div className="grid h-full place-items-center px-6">
-      <div className="max-w-md text-center">
-        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-shell text-brand shadow-card">
-          <Sparkles className="size-7" />
-        </span>
-        <h1 className="mt-5 font-display text-[22px] font-bold tracking-tight text-ink">
-          Conecte um repositório para falar com o Argus
-        </h1>
-        <p className="mt-2 text-[14px] text-ink-soft">
-          O agente precisa de um repositório para analisar pull requests, riscos e cobertura.
-        </p>
-        <div className="mt-6 flex justify-center">
-          <Button variant="brand" size="lg" onClick={() => navigate({ to: "/conectar" })}>
-            <Github className="size-[18px]" />
-            Conectar repositório
-            <ArrowRight className="size-4" />
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function Copilot() {
-  const { repo } = useAuth();
   const { messages, busy, send, reset } = useCopilotChat();
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);
-
-  if (!repo) return <NoRepo />;
 
   const empty = messages.length === 0;
 
@@ -59,7 +27,7 @@ export function Copilot() {
             </span>
             <span className="font-display text-[15px] font-bold tracking-tight text-ink">Argus</span>
             <span className="rounded-full bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-bold text-brand-deep">
-              IA · mock
+              IA · OpenAI
             </span>
           </div>
           <button

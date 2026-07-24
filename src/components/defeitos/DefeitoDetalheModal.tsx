@@ -151,14 +151,14 @@ export function DefeitoDetalheModal({ defeito, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:p-6"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
       <div className="animate-rise flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-card border border-line bg-surface shadow-pop">
         {/* Cabeçalho */}
-        <header className="flex items-start gap-3 border-b border-line px-5 py-4">
+        <header className="flex shrink-0 items-start gap-3 border-b border-line px-5 py-4">
           <span className="mt-0.5 grid size-9 shrink-0 place-items-center rounded-xl bg-risk-high-soft text-risk-high">
             <Bug className="size-5" />
           </span>
@@ -183,7 +183,7 @@ export function DefeitoDetalheModal({ defeito, onClose }: Props) {
         </header>
 
         {/* Corpo */}
-        <div className="scroll-slim flex-1 space-y-5 overflow-y-auto p-5">
+        <div className="scroll-slim min-h-0 flex-1 space-y-5 overflow-y-auto p-5">
           {/* Badges */}
           <div className="flex flex-wrap items-center gap-2">
             <RiskBadge level={sev.level} label={`Severidade: ${sev.label}`} />
@@ -259,7 +259,7 @@ export function DefeitoDetalheModal({ defeito, onClose }: Props) {
         </div>
 
         {/* Rodapé: status + excluir */}
-        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-surface-2/60 px-5 py-3.5">
+        <footer className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-line bg-surface-2/60 px-5 py-3.5">
           <label className="flex items-center gap-2 text-[12.5px] text-ink-soft">
             Status
             <select

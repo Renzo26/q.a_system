@@ -31,6 +31,8 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_ROLE_KEY: str = ""
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
+    ARGUS_MODEL: str = "gpt-4o-mini"
+    GITHUB_TOKEN: str = ""  # opcional: aumenta o limite da API e permite repos privados
 
     # Bootstrap
     AUTO_CREATE_TABLES: bool = True

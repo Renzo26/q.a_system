@@ -3,12 +3,24 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "@tanstack/react-router";
-import { Github, ArrowRight, GitBranch, Star, Lock, Globe, FlaskConical, Sparkles, CheckCircle2 } from "lucide-react";
+import {
+  Github,
+  ArrowRight,
+  GitBranch,
+  Star,
+  Lock,
+  Globe,
+  Sparkles,
+  CheckCircle2,
+  Loader2,
+  AlertCircle,
+  CircleDot,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/Field";
 import { auth, useAuth } from "@/lib/auth";
 import { parseGithubUrl } from "@/lib/utils";
-import { detectRepo } from "@/lib/repoMeta";
+import { useRepoInfo } from "@/hooks/github";
 
 const schema = z.object({
   url: z
@@ -38,15 +50,16 @@ export function Connect() {
 
   const value = watch("url");
   const parsed = useMemo(() => parseGithubUrl(value ?? ""), [value]);
-  const detected = useMemo(() => (parsed ? detectRepo(parsed.owner, parsed.repo) : null), [parsed]);
+  const info = useRepoInfo(parsed?.owner, parsed?.repo);
 
   async function onSubmit(values: FormValues) {
     const repo = parseGithubUrl(values.url);
     if (!repo) return;
-    await new Promise((r) => setTimeout(r, 800));
     auth.connectRepo(repo);
     navigate({ to: "/dashboard" });
   }
+
+  const podeConectar = !!parsed && !info.isLoading && !info.isError;
 
   return (
     <div className="mx-auto max-w-xl px-4 py-7 sm:px-6 sm:py-9">
@@ -95,55 +108,78 @@ export function Connect() {
             ))}
           </div>
 
-          {detected && (
+          {/* Estados da consulta ao GitHub */}
+          {parsed && info.isLoading && (
+            <div className="flex items-center gap-2 rounded-tile border border-line bg-surface px-4 py-3 text-[13px] text-ink-soft">
+              <Loader2 className="size-4 animate-spin text-brand-deep" />
+              Buscando <span className="font-mono">{parsed.owner}/{parsed.repo}</span> no GitHub…
+            </div>
+          )}
+
+          {parsed && info.isError && (
+            <div className="flex items-center gap-2 rounded-tile border border-risk-high/30 bg-risk-high-soft px-4 py-3 text-[13px] font-medium text-risk-high">
+              <AlertCircle className="size-4 shrink-0" />
+              {info.error instanceof Error ? info.error.message : "Repositório não encontrado no GitHub."}
+            </div>
+          )}
+
+          {info.data && (
             <div className="animate-rise overflow-hidden rounded-tile border border-line bg-surface shadow-card">
               <div className="flex items-center gap-2 border-b border-line-soft bg-surface-2 px-4 py-2.5">
                 <Sparkles className="size-3.5 text-brand-deep" />
-                <span className="text-[12px] font-semibold text-ink">Detectado</span>
-                <span className="font-mono text-[11px] text-ink-mute">· pré-análise simulada</span>
+                <span className="text-[12px] font-semibold text-ink">Encontrado no GitHub</span>
+                <span className="font-mono text-[11px] text-ink-mute">· dados reais</span>
               </div>
               <div className="p-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 font-mono text-[14px] text-ink">
-                    <span className="font-semibold">{detected.owner}</span>
+                    <span className="font-semibold">{info.data.owner}</span>
                     <span className="text-ink-mute">/</span>
-                    <span className="font-semibold">{detected.repo}</span>
+                    <span className="font-semibold">{info.data.repo}</span>
                   </div>
                   <span className="inline-flex items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-[11px] font-medium text-ink-soft">
-                    {detected.visibility === "Privado" ? <Lock className="size-3" /> : <Globe className="size-3" />}
-                    {detected.visibility}
+                    {info.data.visibilidade === "Privado" ? <Lock className="size-3" /> : <Globe className="size-3" />}
+                    {info.data.visibilidade}
                   </span>
                 </div>
-                <div className="mt-3 flex flex-wrap items-center gap-2">
-                  {detected.languages.map((l) => (
-                    <span
-                      key={l.name}
-                      className="inline-flex items-center gap-1.5 rounded-md bg-surface-2 px-2 py-0.5 text-[11.5px] text-ink-soft ring-1 ring-line"
-                    >
-                      <span className="size-2 rounded-full" style={{ background: l.color }} />
-                      {l.name}
-                    </span>
-                  ))}
-                </div>
+
+                {info.data.descricao && (
+                  <p className="mt-2 text-[12.5px] leading-relaxed text-ink-soft">{info.data.descricao}</p>
+                )}
+
+                {info.data.linguagens.length > 0 && (
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    {info.data.linguagens.map((l) => (
+                      <span
+                        key={l}
+                        className="inline-flex items-center gap-1.5 rounded-md bg-surface-2 px-2 py-0.5 text-[11.5px] text-ink-soft ring-1 ring-line"
+                      >
+                        <CircleDot className="size-3 text-brand-deep" />
+                        {l}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
                 <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-[11.5px] text-ink-mute">
                   <span className="flex items-center gap-1">
                     <GitBranch className="size-3.5" />
-                    {detected.defaultBranch}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <FlaskConical className="size-3.5" />
-                    {detected.testFramework}
+                    {info.data.defaultBranch}
                   </span>
                   <span className="flex items-center gap-1">
                     <Star className="size-3.5" />
-                    {detected.stars}
+                    {info.data.stars}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <CircleDot className="size-3.5" />
+                    {info.data.issuesAbertas} issues abertas
                   </span>
                 </div>
               </div>
             </div>
           )}
 
-          <Button type="submit" variant="brand" size="lg" block loading={isSubmitting} disabled={!parsed}>
+          <Button type="submit" variant="brand" size="lg" block loading={isSubmitting} disabled={!podeConectar}>
             {!isSubmitting && <Github className="size-[18px]" />}
             {current ? "Trocar e analisar" : "Conectar e analisar"}
             {!isSubmitting && <ArrowRight className="size-4" />}
@@ -151,7 +187,7 @@ export function Connect() {
         </form>
 
         <p className="mt-5 text-center font-mono text-[11px] text-ink-mute">
-          Conexão simulada · nenhum dado é enviado ao GitHub nesta fase
+          Dados reais da API pública do GitHub · o Argus vai analisar este repositório
         </p>
       </div>
     </div>

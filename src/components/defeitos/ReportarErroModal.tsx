@@ -122,7 +122,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:items-center"
+      className="fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-ink/40 p-4 backdrop-blur-sm sm:p-6"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -132,7 +132,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
         className="animate-rise flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-card border border-line bg-surface shadow-pop"
         noValidate
       >
-        <header className="flex items-center gap-3 border-b border-line px-5 py-4">
+        <header className="flex shrink-0 items-center gap-3 border-b border-line px-5 py-4">
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-risk-high-soft text-risk-high">
             <Bug className="size-5" />
           </span>
@@ -150,7 +150,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
           </button>
         </header>
 
-        <div className="scroll-slim flex-1 space-y-4 overflow-y-auto p-5">
+        <div className="scroll-slim min-h-0 flex-1 space-y-4 overflow-y-auto p-5">
           <div className="space-y-1.5">
             <Label>Título</Label>
             <input className={inputCls} placeholder="Resumo curto do erro" autoFocus {...register("titulo")} />
@@ -268,7 +268,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
           )}
         </div>
 
-        <footer className="flex items-center justify-between gap-3 border-t border-line bg-surface-2/60 px-5 py-3.5">
+        <footer className="flex shrink-0 items-center justify-between gap-3 border-t border-line bg-surface-2/60 px-5 py-3.5">
           <span className="flex items-center gap-1.5 font-mono text-[11px] text-ink-mute">
             <GitPullRequest className="size-3.5" />
             nasce com status “Aberto”

@@ -5,9 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.security import hash_password
+from app.models.colecao import Colecao
 from app.models.defeito import Defeito, Evidencia
 from app.models.teste import CasoDeTeste, Execucao
 from app.models.user import User
+from app.services.demo_postman import DEMO_COLLECTION
+from app.services.postman_service import parse_collection
 
 CASOS = [
     ("TC-001", "Login com credenciais válidas", "E2E"),
@@ -138,5 +141,19 @@ async def seed(db: AsyncSession) -> None:
         db.add(_salvar_evidencia_svg(d1.id, "login-sem-erro.svg", "login", "#134e4a"))
         db.add(_salvar_evidencia_svg(d2.id, "paginacao-bug.svg", "page_size", "#7c2d12"))
         db.add(_salvar_evidencia_svg(d3.id, "erro-500-checkout.svg", "500 · checkout", "#7f1d1d"))
+
+    # Coleção Postman de exemplo
+    if await _tabela_vazia(db, Colecao):
+        parsed = parse_collection(DEMO_COLLECTION)
+        db.add(
+            Colecao(
+                nome=parsed["nome"],
+                descricao=parsed["descricao"],
+                total_requests=parsed["total_requests"],
+                total_pastas=parsed["total_pastas"],
+                criado_por=settings.DEMO_USER_NAME,
+                raw=DEMO_COLLECTION,
+            )
+        )
 
     await db.commit()

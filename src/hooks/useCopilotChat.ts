@@ -1,5 +1,7 @@
 import { useCallback, useRef, useState } from "react";
-import { buildTurn, type Block } from "@/lib/copilotEngine";
+import type { Block } from "@/lib/copilotEngine";
+import { enviarArgus, type ArgusMessage } from "@/lib/argus";
+import { auth } from "@/lib/auth";
 import { sleep, uid } from "@/lib/utils";
 
 export interface UserMessage {
@@ -17,10 +19,20 @@ export interface AgentMessage {
 
 export type ChatMessage = UserMessage | AgentMessage;
 
+function textoDoAgente(m: AgentMessage): string {
+  return m.blocks
+    .filter((b): b is Extract<Block, { kind: "text" }> => b.kind === "text")
+    .map((b) => b.text)
+    .join("\n")
+    .trim();
+}
+
 export function useCopilotChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [busy, setBusy] = useState(false);
   const busyRef = useRef(false);
+  const messagesRef = useRef<ChatMessage[]>([]);
+  messagesRef.current = messages;
 
   const patchAgent = useCallback((id: string, fn: (m: AgentMessage) => AgentMessage) => {
     setMessages((prev) => prev.map((m) => (m.id === id && m.role === "agent" ? fn(m) : m)));
@@ -47,6 +59,17 @@ export function useCopilotChat() {
       busyRef.current = true;
       setBusy(true);
 
+      // Monta o histórico a partir das mensagens atuais + a nova pergunta.
+      const history: ArgusMessage[] = [];
+      for (const m of messagesRef.current) {
+        if (m.role === "user") history.push({ role: "user", content: m.text });
+        else {
+          const t = textoDoAgente(m);
+          if (t) history.push({ role: "assistant", content: t });
+        }
+      }
+      history.push({ role: "user", content: text });
+
       const agentId = uid("agent");
       setMessages((prev) => [
         ...prev,
@@ -54,31 +77,27 @@ export function useCopilotChat() {
         { id: agentId, role: "agent", blocks: [], streaming: true },
       ]);
 
-      const blocks = buildTurn(text);
+      // Indicador "pensando".
+      appendBlock(agentId, { kind: "steps", steps: ["Consultando os dados do projeto…"], revealed: 1, done: false });
 
-      for (const block of blocks) {
-        if (block.kind === "steps") {
-          appendBlock(agentId, { ...block, revealed: 0, done: false });
-          for (let i = 1; i <= block.steps.length; i++) {
-            await sleep(400);
-            updateLastBlock(agentId, (b) => (b.kind === "steps" ? { ...b, revealed: i } : b));
-          }
-          updateLastBlock(agentId, (b) => (b.kind === "steps" ? { ...b, done: true } : b));
-          await sleep(280);
-        } else if (block.kind === "text") {
-          appendBlock(agentId, { kind: "text", text: "" });
-          const words = block.text.split(" ");
-          let acc = "";
-          for (const w of words) {
-            acc += (acc ? " " : "") + w;
-            await sleep(16);
-            updateLastBlock(agentId, (b) => (b.kind === "text" ? { ...b, text: acc } : b));
-          }
-          await sleep(200);
-        } else {
-          await sleep(440);
-          appendBlock(agentId, block);
+      try {
+        const { reply } = await enviarArgus(history, auth.snapshot().repo);
+        updateLastBlock(agentId, (b) => (b.kind === "steps" ? { ...b, done: true } : b));
+
+        appendBlock(agentId, { kind: "text", text: "" });
+        const words = reply.split(" ");
+        let acc = "";
+        for (const w of words) {
+          acc += (acc ? " " : "") + w;
+          await sleep(10);
+          updateLastBlock(agentId, (b) => (b.kind === "text" ? { ...b, text: acc } : b));
         }
+      } catch (e) {
+        updateLastBlock(agentId, (b) => (b.kind === "steps" ? { ...b, done: true } : b));
+        appendBlock(agentId, {
+          kind: "text",
+          text: e instanceof Error ? `⚠️ ${e.message}` : "Não consegui falar com o Argus agora.",
+        });
       }
 
       patchAgent(agentId, (m) => ({ ...m, streaming: false }));

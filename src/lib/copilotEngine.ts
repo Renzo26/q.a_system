@@ -209,15 +209,31 @@ export function buildTurn(prompt: string): Block[] {
 }
 
 export const promptStarters: { icon: string; title: string; prompt: string }[] = [
-  { icon: "scan", title: "Analisar o PR #482", prompt: "Analise o PR #482 e me diga o risco e o que testar" },
-  { icon: "flask", title: "Gerar plano de testes", prompt: "Gere um plano de testes para a alteração do PR #482" },
-  { icon: "shield", title: "Explicar o risco", prompt: "Por que o PR #482 é de alto risco?" },
-  { icon: "rocket", title: "Posso liberar a v4.2?", prompt: "Posso liberar a release v4.2 para produção?" },
+  {
+    icon: "shield",
+    title: "Defeitos críticos abertos",
+    prompt: "Quais defeitos críticos ou de alta severidade estão abertos? Liste os códigos e o que precisa ser feito.",
+  },
+  {
+    icon: "scan",
+    title: "Resumo dos defeitos",
+    prompt: "Faça um resumo da situação dos defeitos: quantos existem, por severidade e por status.",
+  },
+  {
+    icon: "flask",
+    title: "Explicar uma coleção",
+    prompt: "Quais coleções do Postman temos importadas? Explique o fluxo de uma delas em linguagem simples.",
+  },
+  {
+    icon: "rocket",
+    title: "O que priorizar agora",
+    prompt: "Com base nos defeitos abertos, o que o time de QA deveria priorizar agora?",
+  },
 ];
 
 export const quickActions: { label: string; prompt: string }[] = [
-  { label: "Analisar PR #482", prompt: "Analise o PR #482 e me diga o risco e o que testar" },
-  { label: "Gerar plano de testes", prompt: "Gere um plano de testes para o PR #482" },
-  { label: "Lacunas de cobertura", prompt: "Quais são as lacunas de cobertura?" },
-  { label: "Posso liberar a v4.2?", prompt: "Posso liberar a release v4.2?" },
+  { label: "Defeitos críticos abertos", prompt: "Quais defeitos críticos ou de alta severidade estão abertos?" },
+  { label: "Resumo dos defeitos", prompt: "Faça um resumo dos defeitos por severidade e status." },
+  { label: "Explicar uma coleção", prompt: "Liste as coleções importadas e explique o fluxo de uma delas." },
+  { label: "O que priorizar", prompt: "Com base nos defeitos abertos, o que devemos priorizar?" },
 ];

@@ -1,13 +1,7 @@
-import { Github, GitPullRequest, GitBranch, FlaskConical, ShieldCheck, FileDiff, History, Zap } from "lucide-react";
-import { useAuth } from "@/lib/auth";
-import { detectRepo } from "@/lib/repoMeta";
+import { Bug, Workflow, Zap, Sparkles, ListChecks, FileText } from "lucide-react";
 import { quickActions } from "@/lib/copilotEngine";
-import { CoverageBar } from "@/components/ui/Progress";
 
 export function ContextPanel({ onAction }: { onAction: (prompt: string) => void }) {
-  const { repo } = useAuth();
-  const meta = repo ? detectRepo(repo.owner, repo.repo) : null;
-
   return (
     <aside className="hidden w-[300px] shrink-0 flex-col gap-4 overflow-y-auto border-l border-line bg-surface-2/40 p-4 xl:flex">
       <div>
@@ -16,38 +10,28 @@ export function ContextPanel({ onAction }: { onAction: (prompt: string) => void 
         </div>
         <div className="rounded-tile border border-line bg-surface p-3">
           <div className="flex items-center gap-2">
-            <Github className="size-4 text-ink-soft" />
-            <span className="truncate font-mono text-[12.5px] font-semibold text-ink">
-              {repo ? `${repo.owner}/${repo.repo}` : "sem repositório"}
+            <span className="grid size-7 place-items-center rounded-lg bg-shell text-brand">
+              <Sparkles className="size-4" />
             </span>
+            <span className="text-[12.5px] font-semibold text-ink">Conectado aos dados do projeto</span>
           </div>
-          {meta && (
-            <div className="mt-2 flex items-center gap-1 font-mono text-[11px] text-ink-mute">
-              <GitBranch className="size-3" />
-              {meta.defaultBranch}
-              <span className="mx-1">·</span>
-              <FlaskConical className="size-3" />
-              {meta.testFramework}
-            </div>
-          )}
+          <p className="mt-2 text-[12px] leading-relaxed text-ink-soft">
+            O Argus consulta os defeitos e as coleções de teste reais antes de responder.
+          </p>
         </div>
       </div>
 
-      {/* PR em foco */}
+      {/* Fontes de dados */}
       <div className="rounded-tile border border-line bg-surface p-3">
-        <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">
-          <GitPullRequest className="size-3.5" />
-          PR em foco
-        </div>
-        <div className="font-mono text-[12.5px] font-semibold text-ink">#482</div>
-        <div className="mt-0.5 text-[12px] text-ink-soft">Refatora fluxo de refresh token</div>
-        <div className="mt-2.5">
-          <div className="mb-1 flex items-center justify-between text-[11px]">
-            <span className="text-ink-mute">cobertura core/auth</span>
-            <span className="nums font-semibold text-ink">61%</span>
-          </div>
-          <CoverageBar value={61} />
-        </div>
+        <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">Fontes de dados</div>
+        <ul className="space-y-1.5 text-[12.5px] text-ink">
+          <li className="flex items-center gap-2">
+            <Bug className="size-3.5 text-risk-high" /> Defeitos e evidências
+          </li>
+          <li className="flex items-center gap-2">
+            <Workflow className="size-3.5 text-brand-deep" /> Coleções do Postman (fluxos)
+          </li>
+        </ul>
       </div>
 
       {/* Ações rápidas */}
@@ -70,18 +54,18 @@ export function ContextPanel({ onAction }: { onAction: (prompt: string) => void 
         </div>
       </div>
 
-      {/* O que o Copilot enxerga */}
+      {/* O que o Argus enxerga */}
       <div className="mt-auto rounded-tile border border-dashed border-line p-3">
         <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">O Argus enxerga</div>
         <ul className="space-y-1.5 text-[12px] text-ink-soft">
           <li className="flex items-center gap-2">
-            <FileDiff className="size-3.5 text-ink-mute" /> Diff e arquivos do PR
+            <Bug className="size-3.5 text-ink-mute" /> Códigos, severidade e status dos defeitos
           </li>
           <li className="flex items-center gap-2">
-            <ShieldCheck className="size-3.5 text-ink-mute" /> Cobertura e suíte de testes
+            <ListChecks className="size-3.5 text-ink-mute" /> Passos e validações de cada coleção
           </li>
           <li className="flex items-center gap-2">
-            <History className="size-3.5 text-ink-mute" /> Histórico de incidentes
+            <FileText className="size-3.5 text-ink-mute" /> Vínculos de rastreabilidade
           </li>
         </ul>
       </div>

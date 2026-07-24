@@ -13,6 +13,8 @@ python-jose[cryptography]>=3.3
 passlib>=1.7.4
 python-multipart>=0.0.9  # uploads (evidências)
 email-validator>=2.1
+openai>=1.40             # agente Argus (LLM)
+httpx>=0.27              # cliente HTTP (API do GitHub)
 
 # Produção (Supabase, per CLAUDE.md) — hashing com bcrypt:
 #   passlib[bcrypt]==1.7.4

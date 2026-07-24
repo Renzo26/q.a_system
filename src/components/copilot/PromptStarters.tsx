@@ -1,6 +1,5 @@
 import { ScanSearch, FlaskConical, ShieldAlert, Rocket, Sparkles, type LucideIcon } from "lucide-react";
 import { promptStarters } from "@/lib/copilotEngine";
-import { useAuth } from "@/lib/auth";
 
 const iconMap: Record<string, LucideIcon> = {
   scan: ScanSearch,
@@ -10,8 +9,6 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 export function PromptStarters({ onPick }: { onPick: (prompt: string) => void }) {
-  const { repo } = useAuth();
-
   return (
     <div className="mx-auto flex h-full max-w-2xl flex-col items-center justify-center px-6 py-10 text-center">
       <span className="grid size-14 place-items-center rounded-2xl bg-shell text-brand shadow-card">
@@ -21,14 +18,7 @@ export function PromptStarters({ onPick }: { onPick: (prompt: string) => void })
         Argus, seu agente de QA
       </h1>
       <p className="mt-2 max-w-md text-[14.5px] text-ink-soft">
-        {repo ? (
-          <>
-            Estou analisando <span className="font-mono font-semibold text-ink">{repo.owner}/{repo.repo}</span>. Pergunte
-            sobre riscos, testes ou releases — ou comece por um dos atalhos.
-          </>
-        ) : (
-          <>Pergunte sobre riscos, testes e releases do repositório conectado.</>
-        )}
+        Pergunte sobre os defeitos, as coleções de teste e a qualidade do projeto — ou comece por um dos atalhos.
       </p>
 
       <div className="mt-8 grid w-full grid-cols-1 gap-3 sm:grid-cols-2">

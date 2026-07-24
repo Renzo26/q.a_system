@@ -15,8 +15,29 @@ import { ScoreRing, RiskBadge, RiskDot } from "@/components/ui/Risk";
 import { cn, type RiskLevel } from "@/lib/utils";
 import type { Block, PlanScenario } from "@/lib/copilotEngine";
 
+/** Renderização mínima de markdown inline: **negrito** e `código`. */
+function renderInline(text: string) {
+  return text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((parte, i) => {
+    if (parte.startsWith("**") && parte.endsWith("**")) {
+      return (
+        <strong key={i} className="font-semibold text-ink">
+          {parte.slice(2, -2)}
+        </strong>
+      );
+    }
+    if (parte.startsWith("`") && parte.endsWith("`")) {
+      return (
+        <code key={i} className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[12.5px] text-ink">
+          {parte.slice(1, -1)}
+        </code>
+      );
+    }
+    return <span key={i}>{parte}</span>;
+  });
+}
+
 function TextBlock({ text }: { text: string }) {
-  return <p className="whitespace-pre-line text-[14px] leading-relaxed text-ink">{text}</p>;
+  return <div className="whitespace-pre-line text-[14px] leading-relaxed text-ink">{renderInline(text)}</div>;
 }
 
 function StepsBlock({ steps, revealed = 0, done = false }: { steps: string[]; revealed?: number; done?: boolean }) {

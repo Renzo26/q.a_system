@@ -7,7 +7,7 @@ import {
   GitPullRequest,
   ShieldAlert,
   GitBranch,
-  FlaskConical,
+  CircleDot,
   Sparkles,
   Plug,
 } from "lucide-react";
@@ -15,7 +15,7 @@ import type { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useAuth } from "@/lib/auth";
-import { detectRepo } from "@/lib/repoMeta";
+import { useRepoInfo } from "@/hooks/github";
 
 const kpiPlaceholders: { label: string; icon: LucideIcon; accent: string }[] = [
   { label: "Score de risco", icon: Gauge, accent: "text-risk-med" },
@@ -52,10 +52,9 @@ function EmptyState() {
 
 export function Dashboard() {
   const { repo } = useAuth();
+  const { data: info } = useRepoInfo(repo?.owner, repo?.repo);
 
   if (!repo) return <EmptyState />;
-
-  const meta = detectRepo(repo.owner, repo.repo);
 
   return (
     <div className="mx-auto max-w-[1200px] space-y-6 px-4 py-6 sm:px-6 sm:py-7">
@@ -78,20 +77,18 @@ export function Dashboard() {
           <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[11.5px] text-ink-mute">
             <span className="flex items-center gap-1">
               <GitBranch className="size-3.5" />
-              {meta.defaultBranch}
+              {info?.defaultBranch ?? "—"}
             </span>
-            <span className="flex items-center gap-1">
-              <FlaskConical className="size-3.5" />
-              {meta.testFramework}
-            </span>
-            <span className="flex items-center gap-1.5">
-              {meta.languages.map((l) => (
-                <span key={l.name} className="inline-flex items-center gap-1">
-                  <span className="size-2 rounded-full" style={{ background: l.color }} />
-                  {l.name}
-                </span>
-              ))}
-            </span>
+            {info?.linguagens?.length ? (
+              <span className="flex items-center gap-1.5">
+                {info.linguagens.slice(0, 4).map((l) => (
+                  <span key={l} className="inline-flex items-center gap-1">
+                    <CircleDot className="size-3 text-brand-deep" />
+                    {l}
+                  </span>
+                ))}
+              </span>
+            ) : null}
           </div>
         </div>
         <Link
