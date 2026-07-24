@@ -66,7 +66,7 @@ export function Connect() {
       <div className="animate-rise">
         <h1 className="font-display text-[24px] font-bold tracking-tight text-ink">Conectar repositório</h1>
         <p className="mt-1.5 text-[14px] text-ink-soft">
-          Cole a URL do repositório GitHub que o Argus vai monitorar e analisar.
+          Cole a URL do repositório GitHub que o Assistente Q.A vai monitorar e analisar.
         </p>
 
         {current && (
@@ -187,7 +187,7 @@ export function Connect() {
         </form>
 
         <p className="mt-5 text-center font-mono text-[11px] text-ink-mute">
-          Dados reais da API pública do GitHub · o Argus vai analisar este repositório
+          Dados reais da API pública do GitHub · o Assistente Q.A vai analisar este repositório
         </p>
       </div>
     </div>

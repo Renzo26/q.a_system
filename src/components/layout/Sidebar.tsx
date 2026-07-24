@@ -77,7 +77,7 @@ export function Sidebar({ open = false, onClose }: { open?: boolean; onClose?: (
             <span className="absolute -right-0.5 -top-0.5 size-2.5 animate-pulse-ring rounded-full bg-risk-low ring-2 ring-shell-2" />
           </span>
           <div className="min-w-0 leading-tight">
-            <div className="truncate text-[12.5px] font-semibold text-shell-ink">Argus ativo</div>
+            <div className="truncate text-[12.5px] font-semibold text-shell-ink">Assistente Q.A ativo</div>
             <div className="truncate font-mono text-[10.5px] text-shell-mute">
               {repo ? `${repo.repo}` : "aguardando repo"}
             </div>

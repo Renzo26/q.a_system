@@ -15,7 +15,7 @@ export function PromptStarters({ onPick }: { onPick: (prompt: string) => void })
         <Sparkles className="size-7" />
       </span>
       <h1 className="mt-5 font-display text-[24px] font-bold tracking-tight text-ink">
-        Argus, seu agente de QA
+        Assistente Q.A, seu agente de qualidade
       </h1>
       <p className="mt-2 max-w-md text-[14.5px] text-ink-soft">
         Pergunte sobre os defeitos, as coleções de teste e a qualidade do projeto — ou comece por um dos atalhos.
