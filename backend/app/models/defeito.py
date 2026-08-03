@@ -25,6 +25,16 @@ class Defeito(Base, TimestampMixin):
     responsavel: Mapped[str] = mapped_column(String(120))
     criado_por: Mapped[str] = mapped_column(String(120))
 
+    # Projeto ao qual o defeito pertence (nulo = defeitos anteriores ao módulo de projetos)
+    projeto_id: Mapped[str | None] = mapped_column(
+        ForeignKey("projetos.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+
+    # Projeto dono do defeito (nulo = defeitos anteriores ao módulo de projetos)
+    projeto_id: Mapped[str | None] = mapped_column(
+        ForeignKey("projetos.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+
     # Vínculo / rastreabilidade (#18)
     caso_de_teste_id: Mapped[str | None] = mapped_column(String(40), nullable=True)
     execucao_id: Mapped[str | None] = mapped_column(String(40), nullable=True)

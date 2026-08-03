@@ -1,6 +1,6 @@
 from functools import partial
 
-from sqlalchemy import JSON, Integer, String, Text
+from sqlalchemy import JSON, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.models.base import Base, TimestampMixin, new_id
@@ -19,3 +19,7 @@ class Colecao(Base, TimestampMixin):
     total_pastas: Mapped[int] = mapped_column(Integer, default=0)
     criado_por: Mapped[str] = mapped_column(String(120))
     raw: Mapped[dict] = mapped_column(JSON)
+
+    projeto_id: Mapped[str | None] = mapped_column(
+        ForeignKey("projetos.id", ondelete="SET NULL"), nullable=True, index=True
+    )

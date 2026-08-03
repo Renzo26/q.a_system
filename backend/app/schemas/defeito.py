@@ -43,11 +43,16 @@ class DefeitoCreate(CamelIn):
     resultado_esperado: str = Field(min_length=1)
     resultado_obtido: str = Field(min_length=1)
     responsavel: str | None = None
+    projeto_id: str | None = None
     vinculo: VinculoIn = VinculoIn()
 
 
 class StatusUpdate(CamelIn):
     status: StatusDefeito
+
+
+class ProjetoUpdate(CamelIn):
+    projeto_id: str | None = None
 
 
 class DefeitoOut(CamelOut):
@@ -64,6 +69,7 @@ class DefeitoOut(CamelOut):
     status: StatusDefeito
     responsavel: str
     criado_por: str
+    projeto_id: str | None = None
     created_at: datetime = Field(serialization_alias="criadoEm")
     updated_at: datetime = Field(serialization_alias="atualizadoEm")
     vinculo: VinculoOut

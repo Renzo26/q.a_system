@@ -57,6 +57,7 @@ export interface Defeito {
   status: StatusDefeito;
   responsavel: string;
   criadoPor: string;
+  projetoId: string | null;
   criadoEm: string;
   atualizadoEm: string;
   vinculo: VinculoTeste;
@@ -73,6 +74,7 @@ export interface NovoDefeitoPayload {
   resultadoEsperado: string;
   resultadoObtido: string;
   responsavel?: string;
+  projetoId?: string | null;
   vinculo: VinculoTeste;
 }
 
@@ -145,8 +147,11 @@ export function formatBytes(n: number) {
 
 /* ---------- API ---------- */
 
-export function listarDefeitos(status?: StatusDefeito): Promise<Defeito[]> {
-  const qs = status ? `?status=${status}` : "";
+export function listarDefeitos(status?: StatusDefeito, projetoId?: string | null): Promise<Defeito[]> {
+  const params = new URLSearchParams();
+  if (status) params.set("status", status);
+  if (projetoId) params.set("projetoId", projetoId);
+  const qs = params.size ? `?${params}` : "";
   return apiFetch<Defeito[]>(`/api/defeitos${qs}`);
 }
 

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Hunter Q.A">
+  <rect width="64" height="64" rx="14" fill="#131419" />
+  <!-- em 16–32px os vincos do check somem: usa-se a faceta principal, sólida -->
+  <g transform="translate(15.05 13.5) scale(0.098)">
+    <g fill="#FFFFFF">
+      <path d="M0 0H61V377H0Z" />
+      <path d="M286 0H346V377H286Z" />
+    </g>
+    <path fill="#E4F24A" d="M329 97C264.1 153.1 218.8 202.4 163 260C129.5 229.1 101.3 196.6 68 164L102 129C121.2 148.2 135.2 165 160 185C188.7 161.7 218 146.9 246 131L329 97Z" />
+  </g>
+</svg>

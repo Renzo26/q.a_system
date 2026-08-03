@@ -6,6 +6,7 @@ import { Connect } from "@/routes/Connect";
 import { Copilot } from "@/routes/Copilot";
 import { Defeitos } from "@/routes/Defeitos";
 import { Colecoes } from "@/routes/Colecoes";
+import { Projetos } from "@/routes/Projetos";
 import { auth } from "@/lib/auth";
 
 const rootRoute = createRootRoute({ component: () => <Outlet /> });
@@ -37,7 +38,7 @@ const dashboardRoute = createRoute({
 
 const copilotRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/argus",
+  path: "/hunter",
   component: Copilot,
 });
 
@@ -51,6 +52,12 @@ const colecoesRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/colecoes",
   component: Colecoes,
+});
+
+const projetosRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: "/projetos",
+  component: Projetos,
 });
 
 const connectRoute = createRoute({
@@ -70,7 +77,14 @@ const indexRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
-  appLayoutRoute.addChildren([dashboardRoute, copilotRoute, defeitosRoute, colecoesRoute, connectRoute]),
+  appLayoutRoute.addChildren([
+    dashboardRoute,
+    projetosRoute,
+    copilotRoute,
+    defeitosRoute,
+    colecoesRoute,
+    connectRoute,
+  ]),
 ]);
 
 export const router = createRouter({

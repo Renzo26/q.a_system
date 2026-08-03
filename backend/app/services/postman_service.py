@@ -137,7 +137,9 @@ def parse_collection(raw: dict) -> dict:
 
 # ---------- Operações de persistência ----------
 
-async def importar(db: AsyncSession, raw: dict, criado_por: str) -> Colecao:
+async def importar(
+    db: AsyncSession, raw: dict, criado_por: str, projeto_id: str | None = None
+) -> Colecao:
     if not is_colecao_valida(raw):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -151,6 +153,7 @@ async def importar(db: AsyncSession, raw: dict, criado_por: str) -> Colecao:
         total_pastas=parsed["total_pastas"],
         criado_por=criado_por,
         raw=raw,
+        projeto_id=projeto_id,
     )
     db.add(colecao)
     await db.commit()
@@ -158,8 +161,11 @@ async def importar(db: AsyncSession, raw: dict, criado_por: str) -> Colecao:
     return colecao
 
 
-async def listar(db: AsyncSession) -> list[Colecao]:
-    result = await db.execute(select(Colecao).order_by(Colecao.created_at.desc()))
+async def listar(db: AsyncSession, projeto_id: str | None = None) -> list[Colecao]:
+    stmt = select(Colecao).order_by(Colecao.created_at.desc())
+    if projeto_id:
+        stmt = stmt.where(Colecao.projeto_id == projeto_id)
+    result = await db.execute(stmt)
     return list(result.scalars().all())
 
 

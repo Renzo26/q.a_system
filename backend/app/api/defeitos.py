@@ -2,7 +2,7 @@ from fastapi import APIRouter, File, Query, UploadFile, status
 
 from app.core.deps import CurrentUser, DbSession
 from app.schemas.common import StatusDefeito
-from app.schemas.defeito import DefeitoCreate, DefeitoOut, StatusUpdate
+from app.schemas.defeito import DefeitoCreate, DefeitoOut, ProjetoUpdate, StatusUpdate
 from app.services import defeito_service
 
 router = APIRouter(prefix="/defeitos", tags=["defeitos"])
@@ -13,8 +13,11 @@ async def listar(
     db: DbSession,
     _user: CurrentUser,
     status_filtro: StatusDefeito | None = Query(default=None, alias="status"),
+    projeto_id: str | None = Query(default=None, alias="projetoId"),
 ) -> list:
-    return await defeito_service.listar(db, status_filtro.value if status_filtro else None)
+    return await defeito_service.listar(
+        db, status_filtro.value if status_filtro else None, projeto_id
+    )
 
 
 @router.post("", response_model=DefeitoOut, status_code=status.HTTP_201_CREATED)
@@ -32,6 +35,13 @@ async def atualizar_status(
     defeito_id: str, data: StatusUpdate, db: DbSession, _user: CurrentUser
 ) -> object:
     return await defeito_service.atualizar_status(db, defeito_id, data.status)
+
+
+@router.patch("/{defeito_id}/projeto", response_model=DefeitoOut)
+async def atribuir_projeto(
+    defeito_id: str, data: ProjetoUpdate, db: DbSession, _user: CurrentUser
+) -> object:
+    return await defeito_service.atribuir_projeto(db, defeito_id, data.projeto_id)
 
 
 @router.delete("/{defeito_id}", status_code=status.HTTP_204_NO_CONTENT)

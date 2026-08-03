@@ -2,7 +2,7 @@ from fastapi import APIRouter, status
 
 from app.core.deps import CurrentUser, DbSession
 from app.schemas.auth import LoginIn, RegisterIn, Token
-from app.schemas.user import UserOut
+from app.schemas.user import RepoIn, UserOut, UserPublic
 from app.services import auth_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -21,3 +21,8 @@ async def login(data: LoginIn, db: DbSession) -> Token:
 @router.get("/me", response_model=UserOut)
 async def me(user: CurrentUser) -> UserOut:
     return UserOut.model_validate(user)
+
+
+@router.put("/repo", response_model=UserPublic)
+async def definir_repo(data: RepoIn, db: DbSession, user: CurrentUser) -> UserPublic:
+    return await auth_service.definir_repo(db, user, data)

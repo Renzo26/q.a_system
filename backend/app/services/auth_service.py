@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.security import create_access_token, hash_password, verify_password
 from app.models.user import User
 from app.schemas.auth import LoginIn, RegisterIn, Token
-from app.schemas.user import UserPublic
+from app.schemas.user import RepoIn, UserPublic
 
 
 def _initials(name: str) -> str:
@@ -14,7 +14,13 @@ def _initials(name: str) -> str:
 
 
 def _to_public(user: User) -> UserPublic:
-    return UserPublic(name=user.name, email=user.email, initials=_initials(user.name), via=user.via)
+    return UserPublic(
+        name=user.name,
+        email=user.email,
+        initials=_initials(user.name),
+        via=user.via,
+        repo=user.repo,
+    )
 
 
 def _token_for(user: User) -> Token:
@@ -48,3 +54,19 @@ async def login(db: AsyncSession, data: LoginIn) -> Token:
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciais inválidas"
         )
     return _token_for(user)
+
+
+async def definir_repo(db: AsyncSession, user: User, data: RepoIn) -> UserPublic:
+    """Conecta ou desconecta o repositório do usuário — fica salvo entre sessões."""
+    owner = (data.owner or "").strip()
+    repo = (data.repo or "").strip()
+    if bool(owner) != bool(repo):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Informe owner e repo juntos, ou ambos vazios para desconectar.",
+        )
+    user.repo_owner = owner or None
+    user.repo_name = repo or None
+    await db.commit()
+    await db.refresh(user)
+    return _to_public(user)

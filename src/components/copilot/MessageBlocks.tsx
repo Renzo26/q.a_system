@@ -45,7 +45,7 @@ function StepsBlock({ steps, revealed = 0, done = false }: { steps: string[]; re
     <div className="rounded-tile border border-line bg-surface-2 p-3.5">
       <div className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">
         {done ? <Check className="size-3.5 text-risk-low" /> : <Loader2 className="size-3.5 animate-spin text-brand-deep" />}
-        {done ? "Análise concluída" : "Assistente Q.A trabalhando"}
+        {done ? "Análise concluída" : "Hunter trabalhando"}
       </div>
       <ul className="space-y-1.5">
         {steps.map((s, i) => {

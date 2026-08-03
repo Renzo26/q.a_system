@@ -30,6 +30,7 @@ class ColecaoOut(CamelOut):
     total_requests: int
     total_pastas: int
     criado_por: str
+    projeto_id: str | None = None
     created_at: datetime = Field(serialization_alias="criadoEm")
 
 

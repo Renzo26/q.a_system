@@ -96,7 +96,7 @@ export function useCopilotChat() {
         updateLastBlock(agentId, (b) => (b.kind === "steps" ? { ...b, done: true } : b));
         appendBlock(agentId, {
           kind: "text",
-          text: e instanceof Error ? `⚠️ ${e.message}` : "Não consegui falar com o Assistente Q.A agora.",
+          text: e instanceof Error ? `⚠️ ${e.message}` : "Não consegui falar com o Hunter agora.",
         });
       }
 

@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from app.models.defeito import Defeito
 from app.schemas.common import StatusDefeito
 from app.schemas.defeito import DefeitoCreate
-from app.services import evidencia_service
+from app.services import evidencia_service, projeto_service
 
 
 async def _proximo_codigo(db: AsyncSession) -> str:
@@ -20,10 +20,14 @@ async def _proximo_codigo(db: AsyncSession) -> str:
     return f"BUG-{proximo:03d}"
 
 
-async def listar(db: AsyncSession, status_filtro: str | None = None) -> list[Defeito]:
+async def listar(
+    db: AsyncSession, status_filtro: str | None = None, projeto_id: str | None = None
+) -> list[Defeito]:
     stmt = select(Defeito).options(selectinload(Defeito.evidencias)).order_by(Defeito.created_at.desc())
     if status_filtro:
         stmt = stmt.where(Defeito.status == status_filtro)
+    if projeto_id:
+        stmt = stmt.where(Defeito.projeto_id == projeto_id)
     result = await db.execute(stmt)
     return list(result.scalars().all())
 
@@ -51,6 +55,7 @@ async def criar(db: AsyncSession, data: DefeitoCreate, criado_por: str) -> Defei
         status="aberto",
         responsavel=data.responsavel or criado_por,
         criado_por=criado_por,
+        projeto_id=data.projeto_id,
         caso_de_teste_id=data.vinculo.caso_de_teste_id,
         execucao_id=data.vinculo.execucao_id,
         pull_request=data.vinculo.pull_request,
@@ -58,6 +63,16 @@ async def criar(db: AsyncSession, data: DefeitoCreate, criado_por: str) -> Defei
     db.add(defeito)
     await db.commit()
     return await obter(db, defeito.id)
+
+
+async def atribuir_projeto(db: AsyncSession, defeito_id: str, projeto_id: str | None) -> Defeito:
+    """Move o defeito para um projeto (ou o desvincula, com `projeto_id` nulo)."""
+    defeito = await obter(db, defeito_id)
+    if projeto_id:
+        await projeto_service.obter(db, projeto_id)  # 404 se não existir
+    defeito.projeto_id = projeto_id
+    await db.commit()
+    return await obter(db, defeito_id)
 
 
 async def atualizar_status(db: AsyncSession, defeito_id: str, novo_status: StatusDefeito) -> Defeito:

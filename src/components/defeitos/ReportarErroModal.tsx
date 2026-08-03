@@ -50,9 +50,11 @@ interface Props {
   open: boolean;
   onClose: () => void;
   initialVinculo?: VinculoTeste;
+  /** Projeto ao qual o defeito será vinculado (vem de "Meus projetos"). */
+  projetoId?: string | null;
 }
 
-export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
+export function ReportarErroModal({ open, onClose, initialVinculo, projetoId }: Props) {
   const [evidencias, setEvidencias] = useState<EvidenciaDraft[]>([]);
   const [erroApi, setErroApi] = useState<string | null>(null);
   const casos = useCasosDeTeste();
@@ -105,6 +107,7 @@ export function ReportarErroModal({ open, onClose, initialVinculo }: Props) {
           passosReproducao: values.passosReproducao,
           resultadoEsperado: values.resultadoEsperado,
           resultadoObtido: values.resultadoObtido,
+          projetoId: projetoId ?? null,
           vinculo: {
             casoDeTesteId: values.casoDeTesteId || null,
             execucaoId: values.execucaoId || null,

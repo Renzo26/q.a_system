@@ -53,6 +53,12 @@ class StatusDefeito(str, Enum):
     cancelado = "cancelado"
 
 
+class StatusProjeto(str, Enum):
+    ativo = "ativo"
+    pausado = "pausado"
+    arquivado = "arquivado"
+
+
 class TipoEvidencia(str, Enum):
     imagem = "imagem"
     video = "video"

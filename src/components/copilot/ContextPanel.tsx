@@ -16,7 +16,7 @@ export function ContextPanel({ onAction }: { onAction: (prompt: string) => void 
             <span className="text-[12.5px] font-semibold text-ink">Conectado aos dados do projeto</span>
           </div>
           <p className="mt-2 text-[12px] leading-relaxed text-ink-soft">
-            O Assistente Q.A consulta os defeitos e as coleções de teste reais antes de responder.
+            O Hunter consulta os defeitos e as coleções de teste reais antes de responder.
           </p>
         </div>
       </div>
@@ -54,9 +54,9 @@ export function ContextPanel({ onAction }: { onAction: (prompt: string) => void 
         </div>
       </div>
 
-      {/* O que o Assistente Q.A enxerga */}
+      {/* O que o Hunter enxerga */}
       <div className="mt-auto rounded-tile border border-dashed border-line p-3">
-        <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">O Assistente Q.A enxerga</div>
+        <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-ink-mute">O Hunter enxerga</div>
         <ul className="space-y-1.5 text-[12px] text-ink-soft">
           <li className="flex items-center gap-2">
             <Bug className="size-3.5 text-ink-mute" /> Códigos, severidade e status dos defeitos

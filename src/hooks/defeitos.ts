@@ -14,8 +14,11 @@ import {
 
 const DEFEITOS_KEY = ["defeitos"] as const;
 
-export function useDefeitos() {
-  return useQuery({ queryKey: DEFEITOS_KEY, queryFn: () => listarDefeitos() });
+export function useDefeitos(projetoId?: string | null) {
+  return useQuery({
+    queryKey: [...DEFEITOS_KEY, projetoId ?? "todos"],
+    queryFn: () => listarDefeitos(undefined, projetoId),
+  });
 }
 
 export function useCasosDeTeste() {

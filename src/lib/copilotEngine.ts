@@ -1,7 +1,7 @@
 import type { RiskLevel } from "@/lib/utils";
 
 /* ============================================================
-   Motor mock do Argus (agente de QA).
+   Motor mock do Hunter (agente de QA).
    Gera "turnos" do agente com blocos ricos, roteirizados por
    intenção. Depois trocamos por Claude (Anthropic SDK) real.
    ============================================================ */

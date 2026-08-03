@@ -25,7 +25,7 @@ export function Copilot() {
             <span className="grid size-7 place-items-center rounded-lg bg-shell text-brand">
               <Sparkles className="size-4" />
             </span>
-            <span className="font-display text-[15px] font-bold tracking-tight text-ink">Assistente Q.A</span>
+            <span className="font-display text-[15px] font-bold tracking-tight text-ink">Hunter</span>
             <span className="rounded-full bg-brand-soft px-2 py-0.5 font-mono text-[10px] font-bold text-brand-deep">
               IA · OpenAI
             </span>

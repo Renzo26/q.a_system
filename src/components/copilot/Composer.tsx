@@ -46,7 +46,7 @@ export function Composer({ onSend, busy }: { onSend: (text: string) => void; bus
             }}
             onKeyDown={onKeyDown}
             rows={1}
-            placeholder="Pergunte ao Assistente Q.A sobre um PR, risco, cobertura ou release…"
+            placeholder="Pergunte ao Hunter sobre um PR, risco, cobertura ou release…"
             className="max-h-40 flex-1 resize-none self-center bg-transparent py-2 text-[14px] text-ink outline-none placeholder:text-ink-mute"
           />
           <button

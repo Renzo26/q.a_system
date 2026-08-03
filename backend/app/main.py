@@ -26,7 +26,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(
     title=settings.APP_NAME,
     version="0.1.0",
-    description="Backend do QA Argus — análise de qualidade, defeitos e evidências.",
+    description="Backend do Hunter Q.A — análise de qualidade, defeitos e evidências.",
     lifespan=lifespan,
 )
 

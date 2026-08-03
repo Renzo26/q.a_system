@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { BrandMark, BrandWordmark } from "@/components/ui/BrandMark";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
@@ -8,31 +8,24 @@ interface LogoProps {
   className?: string;
 }
 
-const markSize = { sm: "size-8", md: "size-9", lg: "size-11" };
-const textSize = { sm: "text-[15px]", md: "text-[17px]", lg: "text-[20px]" };
+/* `variant` = tom do fundo em que o logo é aplicado.
+   dark  → fundo escuro (shell): barras claras
+   light → fundo claro (canvas): barras em tinta */
+const markSize = { sm: "h-7", md: "h-8", lg: "h-10" };
+const wordSize = { sm: "h-[11px]", md: "h-[13px]", lg: "h-4" };
+const subSize = { sm: "text-[9px]", md: "text-[10px]", lg: "text-[11px]" };
 
 export function Logo({ size = "md", variant = "dark", showText = true, className }: LogoProps) {
-  const wordColor = variant === "dark" ? "text-shell-ink" : "text-ink";
-  const subColor = variant === "dark" ? "text-shell-mute" : "text-ink-mute";
+  const inkColor = variant === "dark" ? "text-shell-ink" : "text-ink";
 
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
-      <span
-        className={cn(
-          "grid place-items-center rounded-xl bg-brand text-brand-ink",
-          "shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_10px_24px_-10px_rgba(228,242,74,0.7)]",
-          markSize[size],
-        )}
-      >
-        <Check className={size === "lg" ? "size-6" : "size-5"} strokeWidth={3.2} />
-      </span>
+    <div className={cn("flex items-center gap-3", className)}>
+      <BrandMark className={cn(markSize[size], inkColor)} solid={size !== "lg"} />
       {showText && (
         <div className="leading-none">
-          <div className={cn("font-display font-bold tracking-tight", textSize[size], wordColor)}>
-            Q.A<span className="text-brand"> braesp</span>
-          </div>
-          <div className={cn("mt-1 font-mono text-[10px] uppercase tracking-[0.18em]", subColor)}>
-            quality intelligence
+          <BrandWordmark className={cn(wordSize[size], inkColor)} />
+          <div className={cn("mt-1.5 font-mono uppercase tracking-[0.2em] text-brand", subSize[size])}>
+            Q.A com IA
           </div>
         </div>
       )}

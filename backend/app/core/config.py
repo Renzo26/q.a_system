@@ -8,7 +8,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
-    APP_NAME: str = "QA Argus API"
+    APP_NAME: str = "Hunter Q.A API"
     ENV: str = "dev"
 
     # Banco — default SQLite async para rodar sem infra; asyncpg/Supabase em produção.

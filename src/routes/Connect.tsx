@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -36,6 +36,7 @@ const examples = ["vercel/next.js", "tiangolo/fastapi", "facebook/react"];
 export function Connect() {
   const navigate = useNavigate();
   const { repo: current } = useAuth();
+  const [erroApi, setErroApi] = useState<string | null>(null);
 
   const {
     register,
@@ -55,8 +56,22 @@ export function Connect() {
   async function onSubmit(values: FormValues) {
     const repo = parseGithubUrl(values.url);
     if (!repo) return;
-    auth.connectRepo(repo);
-    navigate({ to: "/dashboard" });
+    setErroApi(null);
+    try {
+      await auth.connectRepo(repo);
+      navigate({ to: "/dashboard" });
+    } catch (e) {
+      setErroApi(e instanceof Error ? e.message : "Não foi possível salvar a conexão");
+    }
+  }
+
+  async function desconectar() {
+    setErroApi(null);
+    try {
+      await auth.disconnectRepo();
+    } catch (e) {
+      setErroApi(e instanceof Error ? e.message : "Não foi possível desconectar");
+    }
   }
 
   const podeConectar = !!parsed && !info.isLoading && !info.isError;
@@ -66,7 +81,7 @@ export function Connect() {
       <div className="animate-rise">
         <h1 className="font-display text-[24px] font-bold tracking-tight text-ink">Conectar repositório</h1>
         <p className="mt-1.5 text-[14px] text-ink-soft">
-          Cole a URL do repositório GitHub que o Assistente Q.A vai monitorar e analisar.
+          Cole a URL do repositório GitHub que o Hunter vai monitorar e analisar.
         </p>
 
         {current && (
@@ -78,8 +93,20 @@ export function Connect() {
                 {current.owner}/{current.repo}
               </div>
             </div>
-            <span className="font-mono text-[11px] text-ink-soft">trocar abaixo ↓</span>
+            <button
+              type="button"
+              onClick={() => void desconectar()}
+              className="shrink-0 rounded-lg px-2.5 py-1.5 text-[12px] font-semibold text-ink-soft transition-colors hover:bg-surface hover:text-risk-high"
+            >
+              Desconectar
+            </button>
           </div>
+        )}
+
+        {erroApi && (
+          <p className="mt-4 rounded-xl bg-risk-high-soft px-3 py-2.5 text-[13px] font-medium text-risk-high">
+            {erroApi}
+          </p>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
@@ -187,7 +214,7 @@ export function Connect() {
         </form>
 
         <p className="mt-5 text-center font-mono text-[11px] text-ink-mute">
-          Dados reais da API pública do GitHub · o Assistente Q.A vai analisar este repositório
+          Dados reais da API pública do GitHub · o Hunter vai analisar este repositório
         </p>
       </div>
     </div>

@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
 from app.services import defeito_service, github_service, postman_service, repo_service
 
-SYSTEM_PROMPT_BASE = """Você é o Argus, o agente de inteligência de Quality Assurance da plataforma QA Argus.
+SYSTEM_PROMPT_BASE = """Você é o Hunter, o agente de inteligência de Quality Assurance da plataforma Hunter Q.A.
 Ajuda o time de qualidade a entender os defeitos, as coleções de teste (Postman), o repositório e a saúde do projeto.
 
 Regras:
